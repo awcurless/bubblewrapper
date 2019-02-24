@@ -3,16 +3,18 @@
 SANDBOX_DIRECTORY=~/.sandboxes
 NAMESPACE=$1
 
+source ./package_manager_configuration.sh
+
 mkdir -p $SANDBOX_DIRECTORY/${NAMESPACE}/files/var/lib/pacman
 mkdir -p $SANDBOX_DIRECTORY/${NAMESPACE}/files/etc
 cp /etc/pacman.conf $SANDBOX_DIRECTORY/${NAMESPACE}/files/etc/pacman.conf
 
 sandboxed_setup() {
-fakechroot fakeroot pacman -Syu --noconfirm \
+fakechroot fakeroot $PACKAGER $UPDATE_ARGS \
     --root $SANDBOX_DIRECTORY/${NAMESPACE}/files\
     --dbpath $SANDBOX_DIRECTORY/${NAMESPACE}/files/var/lib/pacman  \
     --config $SANDBOX_DIRECTORY/${NAMESPACE}/files/etc/pacman.conf \
-    base fakeroot
+    $BASE_PACKAGES
 }
 
 sandboxed_install() {
