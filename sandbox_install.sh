@@ -1,30 +1,30 @@
 #!/bin/sh
 # TODO: remove hardcoded options
 SANDBOX_DIRECTORY=~/.sandboxes
-NAMESPACE=$1
 
 source ./package_manager_configuration.sh
 
-mkdir -p $SANDBOX_DIRECTORY/${NAMESPACE}/files/var/lib/pacman
-mkdir -p $SANDBOX_DIRECTORY/${NAMESPACE}/files/etc
-cp /etc/pacman.conf $SANDBOX_DIRECTORY/${NAMESPACE}/files/etc/pacman.conf
-
+# Setups up a new sandbox with the BASE_PACKAGES and the specified packages
+# installed.
 sandboxed_setup() {
-fakechroot fakeroot $PACKAGER $UPDATE_ARGS \
-    --root $SANDBOX_DIRECTORY/${NAMESPACE}/files\
-    --dbpath $SANDBOX_DIRECTORY/${NAMESPACE}/files/var/lib/pacman  \
-    --config $SANDBOX_DIRECTORY/${NAMESPACE}/files/etc/pacman.conf \
-    $BASE_PACKAGES
+    mkdir -p $SANDBOX_DIRECTORY/${NAMESPACE}/files/var/lib/pacman
+    mkdir -p $SANDBOX_DIRECTORY/${NAMESPACE}/files/etc
+    cp /etc/pacman.conf $SANDBOX_DIRECTORY/${NAMESPACE}/files/etc/pacman.conf
+    fakechroot fakeroot $PACKAGER $UPDATE_ARGS \
+        --root $SANDBOX_DIRECTORY/${NAMESPACE}/files\
+        --dbpath $SANDBOX_DIRECTORY/${NAMESPACE}/files/var/lib/pacman  \
+        --config $SANDBOX_DIRECTORY/${NAMESPACE}/files/etc/pacman.conf \
+        $BASE_PACKAGES $@
 }
 
 sandboxed_install() {
-    bwrap \
-        --bind $SANDBOX_DIRECTORY/${NAMESPACE}/files/ / \
-        --ro-bind /etc/resolv.conf /etc/resolv.conf \
-        --tmpfs /tmp \
-        --proc /proc \
-        --dev /dev \
-        --chdir /
+    echo "Installing:"
+    echo $@
+    fakechroot fakeroot $PACKAGER $UPDATE_ARGS \
+        --root $SANDBOX_DIRECTORY/${NAMESPACE}/files\
+        --dbpath $SANDBOX_DIRECTORY/${NAMESPACE}/files/var/lib/pacman  \
+        --config $SANDBOX_DIRECTORY/${NAMESPACE}/files/etc/pacman.conf \
+        $@
 }
 
 sandboxed_shell() {
@@ -51,4 +51,4 @@ set -euo pipefail
 }
 
 # sandboxed_install $2
-sandboxed_shell
+# sandboxed_shell

@@ -1,0 +1,13 @@
+#!/bin/sh
+source ./sandbox_install.sh
+
+NAMESPACE=$2
+if [[ $1 = "setup" ]]; then
+    echo "branch: setup"
+    sandboxed_setup;
+elif [[ $1 = "start" ]]; then
+    sandboxed_shell;
+elif [[ $1 = "install" ]]; then
+    echo "branch: install"
+    sandboxed_install $3;
+fi
