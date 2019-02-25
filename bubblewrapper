@@ -8,52 +8,52 @@
 #
 
 #Configuration options:
-BASE_PACKAGES="coreutils file less sed vi which gawk grep"
-PACKAGER="pacman"
-UPDATE_ARGS="-Syu --noconfirm"
-UNINSTALL_ARGS="-R"
-SANDBOX_DIRECTORY=~/.sandboxes
+BUBBLEWRAPPER_BASE_PACKAGES="coreutils file less sed vi which gawk grep"
+BUBBLEWRAPPER_PACKAGER_CMD="pacman"
+BUBBLEWRAPPER_UPDATE_ARGS="-Syu --noconfirm"
+BUBBLEWRAPPER_UNINSTALL_ARGS="-R"
+BUBBLEWRAPPER_SANDBOX_DIRECTORY=~/.sandboxes
 
-# Setups up a new sandbox with the BASE_PACKAGES and the specified packages
+# Setups up a new sandbox with the BUBBLEWRAPPER_BASE_PACKAGES and the specified packages
 # installed.
 bubblewrapper_setup() {
-    mkdir -p $SANDBOX_DIRECTORY/${NAMESPACE}/files/var/lib/pacman
-    mkdir -p $SANDBOX_DIRECTORY/${NAMESPACE}/files/etc
-    mkdir -p ${SANDBOX_DIRECTORY}/${NAMESPACE}/files/usr/bin
-    mkdir -p ${SANDBOX_DIRECTORY}/${NAMESPACE}/files/usr/lib
-    cp /etc/pacman.conf $SANDBOX_DIRECTORY/${NAMESPACE}/files/etc/pacman.conf
+    mkdir -p $BUBBLEWRAPPER_SANDBOX_DIRECTORY/${NAMESPACE}/files/var/lib/pacman
+    mkdir -p $BUBBLEWRAPPER_SANDBOX_DIRECTORY/${NAMESPACE}/files/etc
+    mkdir -p ${BUBBLEWRAPPER_SANDBOX_DIRECTORY}/${NAMESPACE}/files/usr/bin
+    mkdir -p ${BUBBLEWRAPPER_SANDBOX_DIRECTORY}/${NAMESPACE}/files/usr/lib
+    cp /etc/pacman.conf $BUBBLEWRAPPER_SANDBOX_DIRECTORY/${NAMESPACE}/files/etc/pacman.conf
 
-    fakechroot fakeroot $PACKAGER \
-        --root $SANDBOX_DIRECTORY/${NAMESPACE}/files \
-        --dbpath $SANDBOX_DIRECTORY/${NAMESPACE}/files/var/lib/pacman  \
-        --config $SANDBOX_DIRECTORY/${NAMESPACE}/files/etc/pacman.conf \
-        --cachedir ${SANDBOX_DIRECTORY}/${NAMESPACE}/files/var/cache/pacman \
-        $UPDATE_ARGS $BASE_PACKAGES
+    fakechroot fakeroot $BUBBLEWRAPPER_PACKAGER_CMD \
+        --root $BUBBLEWRAPPER_SANDBOX_DIRECTORY/${NAMESPACE}/files \
+        --dbpath $BUBBLEWRAPPER_SANDBOX_DIRECTORY/${NAMESPACE}/files/var/lib/pacman  \
+        --config $BUBBLEWRAPPER_SANDBOX_DIRECTORY/${NAMESPACE}/files/etc/pacman.conf \
+        --cachedir ${BUBBLEWRAPPER_SANDBOX_DIRECTORY}/${NAMESPACE}/files/var/cache/pacman \
+        $BUBBLEWRAPPER_UPDATE_ARGS $BUBBLEWRAPPER_BASE_PACKAGES
 }
 
 bubblewrapper_install() {
     echo $@
-    fakechroot fakeroot $PACKAGER \
-        --root $SANDBOX_DIRECTORY/${NAMESPACE}/files \
-        --dbpath $SANDBOX_DIRECTORY/${NAMESPACE}/files/var/lib/pacman  \
-        --config $SANDBOX_DIRECTORY/${NAMESPACE}/files/etc/pacman.conf \
-        --cachedir ${SANDBOX_DIRECTORY}/${NAMESPACE}/files/var/cache/pacman \
-        $UPDATE_ARGS $@
+    fakechroot fakeroot $BUBBLEWRAPPER_PACKAGER_CMD \
+        --root $BUBBLEWRAPPER_SANDBOX_DIRECTORY/${NAMESPACE}/files \
+        --dbpath $BUBBLEWRAPPER_SANDBOX_DIRECTORY/${NAMESPACE}/files/var/lib/pacman  \
+        --config $BUBBLEWRAPPER_SANDBOX_DIRECTORY/${NAMESPACE}/files/etc/pacman.conf \
+        --cachedir ${BUBBLEWRAPPER_SANDBOX_DIRECTORY}/${NAMESPACE}/files/var/cache/pacman \
+        $BUBBLEWRAPPER_UPDATE_ARGS $@
 }
 
 bubblewrapper_uninstall() {
-    fakechroot fakeroot $PACKAGER \
-        --root $SANDBOX_DIRECTORY/${NAMESPACE}/files \
-        --dbpath $SANDBOX_DIRECTORY/${NAMESPACE}/files/var/lib/pacman  \
-        --config $SANDBOX_DIRECTORY/${NAMESPACE}/files/etc/pacman.conf \
-        --cachedir ${SANDBOX_DIRECTORY}/${NAMESPACE}/files/var/cache/pacman \
-        $UNINSTALL_ARGS $@
+    fakechroot fakeroot $BUBBLEWRAPPER_PACKAGER_CMD \
+        --root $BUBBLEWRAPPER_SANDBOX_DIRECTORY/${NAMESPACE}/files \
+        --dbpath $BUBBLEWRAPPER_SANDBOX_DIRECTORY/${NAMESPACE}/files/var/lib/pacman  \
+        --config $BUBBLEWRAPPER_SANDBOX_DIRECTORY/${NAMESPACE}/files/etc/pacman.conf \
+        --cachedir ${BUBBLEWRAPPER_SANDBOX_DIRECTORY}/${NAMESPACE}/files/var/cache/pacman \
+        $BUBBLEWRAPPER_UNINSTALL_ARGS $@
 }
 
 # Update namespace. If a namespace is not specifed, update everything.
 sandboxed_update() {
     if [[ -z ${NAMESPACE} ]]; then
-        for namespace in ${SANDBOX_DIRECTORY}/*; do
+        for namespace in ${BUBBLEWRAPPER_SANDBOX_DIRECTORY}/*; do
             name=${namespace##*/}
             NAMESPACE=$name
             bubblewrapper_install;
@@ -66,10 +66,10 @@ sandboxed_update() {
 bubblewrapper_shell() {
     set -euo pipefail
     (exec bwrap --ro-bind /usr /usr \
-      --bind ${SANDBOX_DIRECTORY}/${NAMESPACE}/files/ / \
+      --bind ${BUBBLEWRAPPER_SANDBOX_DIRECTORY}/${NAMESPACE}/files/ / \
       --dir /tmp \
       --dir /var \
-      --ro-bind ${SANDBOX_DIRECTORY}/${NAMESPACE}/files/usr /usr \
+      --ro-bind ${BUBBLEWRAPPER_SANDBOX_DIRECTORY}/${NAMESPACE}/files/usr /usr \
       --proc /proc \
       --dev /dev \
       --ro-bind /etc/resolv.conf /etc/resolv.conf \
@@ -84,7 +84,7 @@ bubblewrapper_shell() {
 }
 
 bubblewrapper_destroy() {
-    rm -rf ${SANDBOX_DIRECTORY}/${NAMESPACE}
+    rm -rf ${BUBBLEWRAPPER_SANDBOX_DIRECTORY}/${NAMESPACE}
 }
 
 # CLI
