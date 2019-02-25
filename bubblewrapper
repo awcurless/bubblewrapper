@@ -1,4 +1,11 @@
 #!/bin/sh
+# Command line interface for bubblewrapper. Usage:
+# bubblewrapper setup <namespace> | Configures the namspace for later use. Installs
+#                                   the base set of packages.
+# bubblewrapper start <namespace> | Spawn an SH shell in the namespace.
+# bubblewrapper install <namspace> <package> | Install the given packages into the
+#                                             namespace.
+#
 source ./sandbox_install.sh
 
 NAMESPACE=$2
@@ -10,4 +17,8 @@ elif [[ $1 = "start" ]]; then
 elif [[ $1 = "install" ]]; then
     echo "branch: install"
     sandboxed_install $3;
+elif [[ $1 = "uninstall" ]]; then
+    sandboxed_uninstall $3;
+elif [[ $1 = "destroy" ]]; then
+    sandboxed_destroy;
 fi
