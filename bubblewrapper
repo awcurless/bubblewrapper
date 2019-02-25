@@ -6,9 +6,13 @@
 # bubblewrapper install <namspace> <package> | Install the given packages into the
 #                                             namespace.
 #
-SANDBOX_DIRECTORY=~/.sandboxes
 
-source ./package_manager_configuration.sh
+#Configuration options:
+BASE_PACKAGES="coreutils file less sed vi which gawk grep"
+PACKAGER="pacman"
+UPDATE_ARGS="-Syu --noconfirm"
+UNINSTALL_ARGS="-R"
+SANDBOX_DIRECTORY=~/.sandboxes
 
 # Setups up a new sandbox with the BASE_PACKAGES and the specified packages
 # installed.
