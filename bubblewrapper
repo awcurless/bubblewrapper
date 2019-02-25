@@ -12,7 +12,7 @@ source ./package_manager_configuration.sh
 
 # Setups up a new sandbox with the BASE_PACKAGES and the specified packages
 # installed.
-sandboxed_setup() {
+bubblewrapper_setup() {
     mkdir -p $SANDBOX_DIRECTORY/${NAMESPACE}/files/var/lib/pacman
     mkdir -p $SANDBOX_DIRECTORY/${NAMESPACE}/files/etc
     mkdir -p ${SANDBOX_DIRECTORY}/${NAMESPACE}/files/usr/bin
@@ -27,7 +27,7 @@ sandboxed_setup() {
         $UPDATE_ARGS $BASE_PACKAGES
 }
 
-sandboxed_install() {
+bubblewrapper_install() {
     echo $@
     fakechroot fakeroot $PACKAGER \
         --root $SANDBOX_DIRECTORY/${NAMESPACE}/files \
@@ -37,7 +37,7 @@ sandboxed_install() {
         $UPDATE_ARGS $@
 }
 
-sandboxed_uninstall() {
+bubblewrapper_uninstall() {
     fakechroot fakeroot $PACKAGER \
         --root $SANDBOX_DIRECTORY/${NAMESPACE}/files \
         --dbpath $SANDBOX_DIRECTORY/${NAMESPACE}/files/var/lib/pacman  \
@@ -52,14 +52,14 @@ sandboxed_update() {
         for namespace in ${SANDBOX_DIRECTORY}/*; do
             name=${namespace##*/}
             NAMESPACE=$name
-            sandboxed_install;
+            bubblewrapper_install;
         done
     else
-        sandboxed_install;
+        bubblewrapper_install;
     fi
 }
 
-sandboxed_shell() {
+bubblewrapper_shell() {
     set -euo pipefail
     (exec bwrap --ro-bind /usr /usr \
       --bind ${SANDBOX_DIRECTORY}/${NAMESPACE}/files/ / \
@@ -79,7 +79,7 @@ sandboxed_shell() {
       /usr/bin/sh) \
 }
 
-sandboxed_destroy() {
+bubblewrapper_destroy() {
     rm -rf ${SANDBOX_DIRECTORY}/${NAMESPACE}
 }
 
@@ -87,16 +87,16 @@ sandboxed_destroy() {
 NAMESPACE=$2
 if [[ $1 = "setup" ]]; then
     echo "branch: setup"
-    sandboxed_setup;
+    bubblewrapper_setup;
 elif [[ $1 = "start" ]]; then
-    sandboxed_shell;
+    bubblewrapper_shell;
 elif [[ $1 = "install" ]]; then
     echo "branch: install"
-    sandboxed_install $3;
+    bubblewrapper_install $3;
 elif [[ $1 = "uninstall" ]]; then
-    sandboxed_uninstall $3;
+    bubblewrapper_uninstall $3;
 elif [[ $1 = "destroy" ]]; then
-    sandboxed_destroy;
+    bubblewrapper_destroy;
 elif [[ $1 = "update" ]]; then
     sandboxed_update;
 fi
