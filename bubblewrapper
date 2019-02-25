@@ -8,11 +8,21 @@
 #
 
 #Configuration options:
-BUBBLEWRAPPER_BASE_PACKAGES="coreutils file less sed vi which gawk grep"
-BUBBLEWRAPPER_PACKAGER_CMD="pacman"
-BUBBLEWRAPPER_UPDATE_ARGS="-Syu --noconfirm"
-BUBBLEWRAPPER_UNINSTALL_ARGS="-R"
-BUBBLEWRAPPER_SANDBOX_DIRECTORY=~/.sandboxes
+if [[ -z $BUBBLEWRAPPER_BASE_PACKAGES ]]; then
+    BUBBLEWRAPPER_BASE_PACKAGES="coreutils file less sed vi which gawk grep";
+fi
+if [[ -z $BUBBLEWRAPPER_PACKAGER_CMD ]]; then
+    BUBBLEWRAPPER_PACKAGER_CMD="pacman";
+fi
+if [[ -z $BUBBLEWRAPPER_UPDATE_ARGS ]]; then
+    BUBBLEWRAPPER_UPDATE_ARGS="-Syu --noconfirm";
+fi
+if [[ -z $BUBBLEWRAPPER_UNINSTALL_ARGS ]]; then
+    BUBBLEWRAPPER_UNINSTALL_ARGS="-R"
+fi
+if [[ -z $BUBBLEWRAPPER_SANDBOX_DIRECTORY ]]; then
+    BUBBLEWRAPPER_SANDBOX_DIRECTORY=~/.sandboxes ;
+fi
 
 # Setups up a new sandbox with the BUBBLEWRAPPER_BASE_PACKAGES and the specified packages
 # installed.
