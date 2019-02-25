@@ -1,11 +1,5 @@
 #!/bin/sh
-# Command line interface for bubblewrapper. Usage:
-# bubblewrapper setup <namespace> | Configures the namspace for later use. Installs
-#                                   the base set of packages.
-# bubblewrapper start <namespace> | Spawn an SH shell in the namespace.
-# bubblewrapper install <namspace> <package> | Install the given packages into the
-#                                             namespace.
-#
+# See README.md for usage instructions.
 
 #Configuration options:
 if [[ -z $BUBBLEWRAPPER_BASE_PACKAGES ]]; then
