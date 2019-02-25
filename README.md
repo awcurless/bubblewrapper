@@ -35,3 +35,4 @@ to remove a package.
 |`bubblewrapper update <namespace>` | Update all packages in the namespace. If no namespace is specified, update all. |
 | `bubblewrapper install <namespace> <packages...>` |  Installs the packages into the given namespace. |
 | `bubblewrapper delete <namespace>` | Deletes the specified namespace.
+| `bubblewrapper uninstall <namespace> <package>` | Uninstall the given package from the given namespace. |
