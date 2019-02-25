@@ -9,6 +9,9 @@ source ./package_manager_configuration.sh
 sandboxed_setup() {
     mkdir -p $SANDBOX_DIRECTORY/${NAMESPACE}/files/var/lib/pacman
     mkdir -p $SANDBOX_DIRECTORY/${NAMESPACE}/files/etc
+    mkdir -p ${SANDBOX_DIRECTORY}/${NAMESPACE}/files/usr/bin
+    mkdir -p ${SANDBOX_DIRECTORY}/${NAMESPACE}/files/usr/lib
+
     cp /etc/pacman.conf $SANDBOX_DIRECTORY/${NAMESPACE}/files/etc/pacman.conf
     fakechroot fakeroot $PACKAGER $UPDATE_ARGS \
         --root $SANDBOX_DIRECTORY/${NAMESPACE}/files\
@@ -18,7 +21,6 @@ sandboxed_setup() {
 }
 
 sandboxed_install() {
-    echo "Installing:"
     echo $@
     fakechroot fakeroot $PACKAGER $UPDATE_ARGS \
         --root $SANDBOX_DIRECTORY/${NAMESPACE}/files\
@@ -33,22 +35,18 @@ set -euo pipefail
       --dir /tmp \
       --dir /var \
       --symlink ../tmp var/tmp \
+      --symlink usr/bin /bin \
+      --symlink usr/lib /lib \
+      --symlink usr/lib /lib64 \
+      --symlink usr/bin /sbin \
       --proc /proc \
       --dev /dev \
       --ro-bind /etc/resolv.conf /etc/resolv.conf \
-      --symlink usr/lib /lib \
-      --symlink usr/lib64 /lib64 \
-      --symlink usr/bin /bin \
-      --symlink usr/sbin /sbin \
       --chdir / \
       --unshare-all \
-      --unshare-net \
       --die-with-parent \
       --dir /run/user/$(id -u) \
       --setenv XDG_RUNTIME_DIR "/run/user/`id -u`" \
       --setenv PS1 "${NAMESPACE}> " \
-      /bin/sh) \
+      sh) \
 }
-
-# sandboxed_install $2
-# sandboxed_shell
