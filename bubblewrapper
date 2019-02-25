@@ -21,4 +21,6 @@ elif [[ $1 = "uninstall" ]]; then
     sandboxed_uninstall $3;
 elif [[ $1 = "destroy" ]]; then
     sandboxed_destroy;
+elif [[ $1 = "update" ]]; then
+    sandboxed_update;
 fi

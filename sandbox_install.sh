@@ -40,6 +40,19 @@ sandboxed_uninstall() {
         $UNINSTALL_ARGS $@
 }
 
+# Update namespace. If a namespace is not specifed, update everything.
+sandboxed_update() {
+    if [[ -z ${NAMESPACE} ]]; then
+        for namespace in ${SANDBOX_DIRECTORY}/*; do
+            name=${namespace##*/}
+            NAMESPACE=$name
+            sandboxed_install;
+        done
+    else
+        sandboxed_install;
+    fi
+}
+
 sandboxed_shell() {
     set -euo pipefail
     (exec bwrap --ro-bind /usr /usr \
